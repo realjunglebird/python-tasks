@@ -45,14 +45,14 @@ def generate_color_sprite(n=8, m=8):
         for c in range(half_m):
             # Вероятность закрашивания пикселя
             if np.random.random() > 0.5:
-                color = main_color if np.random.random() > 0.2 else accent_color
+                color = main_color if np.random.random() > 0.25 else accent_color
                 sprite[r, c] = color
                 sprite[r, m - 1 - c] = color
     
     return sprite
 
+# Создаёт карту цветных спрайтов.
 def generate_sprite_map(rows=10, cols=15, n=8, m=8, padding=2):
-    "Создаёт карту цветных спрайтов."
     total_h = rows * (n + padding) + padding
     total_w = cols * (m + padding) + padding
 
