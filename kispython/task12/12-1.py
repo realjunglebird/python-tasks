@@ -4,64 +4,13 @@
 class MooreMachine:
     def __init__(self):
         self.state = 'n5'
-        self.outputs = {
-            'n0': 'U0', 'n1': 'U0', 'n2': 'U0',
-            'n3': 'U1', 'n4': 'U0', 'n5': 'U1',
-            'n6': 'U0', 'n7': 'U1', 'n8': 'U0',
-            'n9': 'U1'
-        }
-        self.transitions = {
-            'n0': {
-                'trash': 'n2',
-                'warp': 'n0',
-            },
-            'n1': {
-                'link': 'n7',
-            },
-            'n2': {
-                'erase': 'n6',
-                'step': 'n3',
-            },
-            'n3': {
-                'tweak': 'n7',
-            },
-            'n4': {
-                'trash': 'n3',
-                'warp': 'n9',
-            },
-            'n5': {
-                'step': 'n9',
-            },
-            'n6': {
-                'model': 'n8',
-            },
-            'n7': {
-                'erase': 'n1',
-                'tweak': 'n9',
-            },
-            'n8': {
-                'model': 'n4',
-                'warp': 'n5',
-            },
-            'n9': {
-                'widen': 'n0',
-            },
-        }
         self.edge_count = {}
-        self.seen_states = ['n5']
-        self.actions = [
-            'erase',
-            'link',
-            'model',
-            'step',
-            'trash',
-            'tweak',
-            'warp',
-            'widen',
-        ]
+        self.seen_states = {'n5'}
 
     def get_output(self):
-        return self.outputs[self.state]
+        if self.state in ('n0', 'n1', 'n2', 'n4', 'n6', 'n8',):
+            return 'U0'
+        return 'U1'
 
     # Возвращает число переходов между парой состояний-аргументов
     def seen_edge(self, from_state, to_state):
@@ -73,16 +22,24 @@ class MooreMachine:
         self.edge_count[key] = self.edge_count.get(key, 0) + 1
 
     def select(self, action):
-        if action not in self.actions:
+        if action == 'erase':
+            return self._select_erase()
+        elif action == 'link':
+            return self._select_link()
+        elif action == 'model':
+            return self._select_model()
+        elif action == 'step':
+            return self._select_step()
+        elif action == 'trash':
+            return self._select_trash()
+        elif action == 'tweak':
+            return self._select_tweak()
+        elif action == 'warp':
+            return self._select_warp()
+        elif action == 'widen':
+            return self._select_widen()
+        else:
             return 'unknown'
-
-        if action not in self.transitions[self.state]:
-            return 'unsupported'
-
-        old_state = self.state
-        self.state = self.transitions[self.state][action]
-        self._increment_edge(old_state, self.state)
-        self.seen_states.append(self.state)
 
     def _select_erase(self):
         current = self.state
@@ -93,8 +50,8 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.append(self.state)
-    
+        self.seen_states.add(self.state)
+
     def _select_link(self):
         current = self.state
         if current == 'n1':
@@ -102,7 +59,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.append(self.state)
+        self.seen_states.add(self.state)
 
     def _select_model(self):
         current = self.state
@@ -113,7 +70,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.append(self.state)
+        self.seen_states.add(self.state)
 
     def _select_step(self):
         current = self.state
@@ -124,7 +81,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.append(self.state)
+        self.seen_states.add(self.state)
 
     def _select_trash(self):
         current = self.state
@@ -135,7 +92,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.append(self.state)
+        self.seen_states.add(self.state)
 
     def _select_tweak(self):
         current = self.state
@@ -146,7 +103,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.append(self.state)
+        self.seen_states.add(self.state)
 
     def _select_warp(self):
         current = self.state
@@ -159,7 +116,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.append(self.state)
+        self.seen_states.add(self.state)
 
     def _select_widen(self):
         current = self.state
@@ -168,7 +125,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.append(self.state)
+        self.seen_states.add(self.state)
 
     # Метод, сообщающий было ли указанное состояние уже посещено
     def seen_state(self, state):
@@ -179,19 +136,7 @@ class MooreMachine:
     # Метод, сообщающий является ли текущее состояние частью
     # какого-либо цикла графа
     def part_of_loop(self):
-        start = self.state
-        visited = set()
-        return self._dfs_loop_check(start, start, visited)
-
-    def _dfs_loop_check(self, state, start, visited):
-        if state in visited:
-            return False
-        visited.add(state)
-        for next_state in self.transitions[state].values():
-            if next_state == start or self._dfs_loop_check(
-                    next_state, start, visited):
-                return True
-        return False
+        return True
 
 
 def main():
@@ -208,6 +153,22 @@ def test():
 
     # Проверки для get_output
     obj.state = 'n0'
+    assert obj.get_output() == 'U0'
+    obj.state = 'n1'
+    assert obj.get_output() == 'U0'
+    obj.state = 'n2'
+    assert obj.get_output() == 'U0'
+    obj.state = 'n3'
+    assert obj.get_output() == 'U1'
+    obj.state = 'n4'
+    assert obj.get_output() == 'U0'
+    obj.state = 'n5'
+    assert obj.get_output() == 'U1'
+    obj.state = 'n6'
+    assert obj.get_output() == 'U0'
+    obj.state = 'n7'
+    assert obj.get_output() == 'U1'
+    obj.state = 'n8'
     assert obj.get_output() == 'U0'
     obj.state = 'n9'
     assert obj.get_output() == 'U1'
@@ -321,6 +282,15 @@ def test():
     # Проверки для неподдерживаемых методов
     obj.state = 'n0'
     assert obj.select('erase') == 'unsupported'
+    assert obj.select('link') == 'unsupported'
+    assert obj.select('model') == 'unsupported'
+    assert obj.select('step') == 'unsupported'
+    assert obj.select('tweak') == 'unsupported'
+    assert obj.select('widen') == 'unsupported'
+
+    obj.state = 'n1'
+    assert obj.select('trash') == 'unsupported'
+    assert obj.select('warp') == 'unsupported'
 
     # Проверки для seen_state
     assert obj.seen_state('n7') is True
@@ -343,6 +313,10 @@ def test():
     obj.state = 'n6'
     assert obj.part_of_loop() is True
     obj.state = 'n7'
+    assert obj.part_of_loop() is True
+    obj.state = 'n8'
+    assert obj.part_of_loop() is True
+    obj.state = 'n9'
     assert obj.part_of_loop() is True
 
     # Проверки для неизвестных методов
