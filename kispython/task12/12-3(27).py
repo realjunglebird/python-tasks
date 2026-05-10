@@ -131,6 +131,12 @@ def test():
     obj.state = 'Y4'
     assert obj.has_max_out_edges() is True
 
+    # Проверка метода seen_method
+    assert obj.seen_method('post') == 0
+    obj.move_post()
+    assert obj.seen_method('post') == 1
+
+
     # Проверка метода part_of_loop
     obj.state = 'Y0'
     assert obj.part_of_loop() is True
@@ -189,5 +195,8 @@ def test():
 
     # Проверка вызова неизвестных методов
     assert obj.move_move() == 'unknown'
+
+    # Проверка неизвестных атрибутов
+    assert obj.unknown_attribute is None
 
 test()

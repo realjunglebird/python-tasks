@@ -4,8 +4,8 @@
 class MooreMachine:
     def __init__(self):
         self.state = 'n5'
-        self.edge_count = {}
-        self.seen_states = {'n5'}
+        self.edge_count = []
+        self.seen_states = ['n5']
 
     def get_output(self):
         if self.state in ('n0', 'n1', 'n2', 'n4', 'n6', 'n8',):
@@ -15,11 +15,11 @@ class MooreMachine:
     # Возвращает число переходов между парой состояний-аргументов
     def seen_edge(self, from_state, to_state):
         key = (from_state, to_state)
-        return self.edge_count.get(key, 0)
+        return self.edge_count.count(key)
 
     def _increment_edge(self, from_state, to_state):
         key = (from_state, to_state)
-        self.edge_count[key] = self.edge_count.get(key, 0) + 1
+        self.edge_count.append(key)
 
     def select(self, action):
         if action == 'erase':
@@ -50,7 +50,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.add(self.state)
+        self.seen_states.append(self.state)
 
     def _select_link(self):
         current = self.state
@@ -59,7 +59,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.add(self.state)
+        self.seen_states.append(self.state)
 
     def _select_model(self):
         current = self.state
@@ -70,7 +70,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.add(self.state)
+        self.seen_states.append(self.state)
 
     def _select_step(self):
         current = self.state
@@ -81,7 +81,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.add(self.state)
+        self.seen_states.append(self.state)
 
     def _select_trash(self):
         current = self.state
@@ -92,7 +92,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.add(self.state)
+        self.seen_states.append(self.state)
 
     def _select_tweak(self):
         current = self.state
@@ -103,7 +103,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.add(self.state)
+        self.seen_states.append(self.state)
 
     def _select_warp(self):
         current = self.state
@@ -116,7 +116,7 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.add(self.state)
+        self.seen_states.append(self.state)
 
     def _select_widen(self):
         current = self.state
@@ -125,13 +125,11 @@ class MooreMachine:
         else:
             return 'unsupported'
         self._increment_edge(current, self.state)
-        self.seen_states.add(self.state)
+        self.seen_states.append(self.state)
 
     # Метод, сообщающий было ли указанное состояние уже посещено
     def seen_state(self, state):
-        if state not in self.seen_states:
-            return False
-        return True
+        return state in self.seen_states
 
     # Метод, сообщающий является ли текущее состояние частью
     # какого-либо цикла графа
