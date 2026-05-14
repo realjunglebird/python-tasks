@@ -1,45 +1,6 @@
 class MealyMachine:
     def __init__(self):
         self.state = 'Y5'
-
-        # Переходы от каждой вершины, в формате
-        # 'имя_метода': ('вершина_назначения', 'возвращаемое_значение')
-        self.transitions = {
-            'Y0': {
-                'merge': ('Y0', 'd3'),
-                'post': ('Y6', 'd7'),
-            },
-            'Y1': {},
-            'Y2': {
-                'get': ('Y4', 'd3'),
-                'open': ('Y7', 'd8'),
-            },
-            'Y3': {
-                'post': ('Y1', 'd3'),
-            },
-            'Y4': {
-                'check': ('Y0', 'd4'),
-                'post': ('Y7', 'd0'),
-                'throw': ('Y2', 'd7'),
-            },
-            'Y5': {
-                'make': ('Y4', 'd6'),
-                'merge': ('Y2', 'd2'),
-            },
-            'Y6': {
-                'merge': ('Y3', 'd0'),
-            },
-            'Y7': {
-                'post': ('Y8', 'd4'),
-            },
-            'Y8': {
-                'merge': ('Y9', 'd0'),
-                'post': ('Y5', 'd7'),
-            },
-            'Y9': {
-                'check': ('Y0', 'd1'),
-            },
-        }
         self.methods = {
             'check': 0,
             'get': 0,
@@ -49,7 +10,7 @@ class MealyMachine:
             'post': 0,
             'throw': 0,
         }
-    
+
     def __getattr__(self, name):
         if name.startswith('move_'):
             def move_unknown(*args, **kwargs):
@@ -64,54 +25,122 @@ class MealyMachine:
     # Метод, возвращающий число успешных выполнений аргумента-метода
     def seen_method(self, method):
         return self.methods[method]
-
+    
     # Метод, возвращающий истину, если текущее состояние является
     # частью какого-либо цикла
+    # (для простоты просто сравниваем текущее состояние с
+    # заранее найденным списком узлов-частей циклов)
     def part_of_loop(self):
-        start = self.state
-        visited = set()
-        return self._dfs_loop_check(start, start, visited)
-    
-    # Вспомогательный метод для проверки, является ли вершина частью цикла
-    def _dfs_loop_check(self, state, start, visited):
-        if state in visited:
-            return False
-        visited.add(state)
-        for next_state in self.transitions[state].values():
-            if next_state[0] == start or self._dfs_loop_check(
-                    next_state[0], start, visited):
-                return True
-        return False
-    
-    def move(self, method):
-        if method not in self.transitions[self.state]:
-            return 'unsupported'
-        
-        current_state = self.state
-        self.state = self.transitions[current_state][method][0]
-        self.methods[method] += 1
-        return self.transitions[current_state][method][1]
-    
+        return self.state in ('Y0', 'Y2', 'Y4', 'Y5', 'Y7', 'Y8')
+
+    # Метод check
     def move_check(self):
-        return self.move('check')
+        current = self.state
+        match current:
+            case 'Y4':
+                self.state = 'Y0'
+                self.methods['check'] += 1
+                return 'd4'
+            case 'Y9':
+                self.state = 'Y0'
+                self.methods['check'] += 1
+                return 'd1'
+            case _:
+                return 'unsupported'
     
+    # Метод get
     def move_get(self):
-        return self.move('get')
-    
+        current = self.state
+        match current:
+            case 'Y2':
+                self.state = 'Y4'
+                self.methods['get'] += 1
+                return 'd3'
+            case _:
+                return 'unsupported'
+            
+    # Метод make
     def move_make(self):
-        return self.move('make')
-    
+        current = self.state
+        match current:
+            case 'Y5':
+                self.state = 'Y4'
+                self.methods['make'] += 1
+                return 'd6'
+            case _:
+                return 'unsupported'
+
+    # Метод merge
     def move_merge(self):
-        return self.move('merge')
+        current = self.state
+        match current:
+            case 'Y0':
+                self.state = 'Y0'
+                self.methods['merge'] += 1
+                return 'd3'
+            case 'Y5':
+                self.state = 'Y2'
+                self.methods['merge'] += 1
+                return 'd2'
+            case 'Y6':
+                self.state = 'Y3'
+                self.methods['merge'] += 1
+                return 'd0'
+            case 'Y8':
+                self.state = 'Y9'
+                self.methods['merge'] += 1
+                return 'd0'
+            case _:
+                return 'unsupported'
     
+    # Метод open
     def move_open(self):
-        return self.move('open')
+        current = self.state
+        match current:
+            case 'Y2':
+                self.state = 'Y7'
+                self.methods['open'] += 1
+                return 'd8'
+            case _:
+                return 'unsupported'
     
+    # Метод post
     def move_post(self):
-        return self.move('post')
+        current = self.state
+        match current:
+            case 'Y0':
+                self.state = 'Y6'
+                self.methods['post'] += 1
+                return 'd7'
+            case 'Y3':
+                self.state = 'Y1'
+                self.methods['post'] += 1
+                return 'd3'
+            case 'Y4':
+                self.state = 'Y7'
+                self.methods['post'] += 1
+                return 'd0'
+            case 'Y7':
+                self.state = 'Y8'
+                self.methods['post'] += 1
+                return 'd4'
+            case 'Y8':
+                self.state = 'Y5'
+                self.methods['post'] += 1
+                return 'd7'
+            case _:
+                return 'unsupported'
     
+    # Метод throw
     def move_throw(self):
-        return self.move('throw')
+        current = self.state
+        match current:
+            case 'Y4':
+                self.state = 'Y2'
+                self.methods['throw'] += 1
+                return 'd7'
+            case _:
+                return 'unsupported'
 
 
 def main():
