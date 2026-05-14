@@ -16,16 +16,16 @@ class MealyMachine:
             def move_unknown(*args, **kwargs):
                 return 'unknown'
             return move_unknown
-    
+
     # Метод, возвращающий истину, если текущее состояние имеет
     # максимальное число выходных дуг в графе
     def has_max_out_edges(self):
         return True if self.state == 'Y4' else False
-    
+
     # Метод, возвращающий число успешных выполнений аргумента-метода
     def seen_method(self, method):
         return self.methods[method]
-    
+
     # Метод, возвращающий истину, если текущее состояние является
     # частью какого-либо цикла
     # (для простоты просто сравниваем текущее состояние с
@@ -47,7 +47,7 @@ class MealyMachine:
                 return 'd1'
             case _:
                 return 'unsupported'
-    
+
     # Метод get
     def move_get(self):
         current = self.state
@@ -58,7 +58,7 @@ class MealyMachine:
                 return 'd3'
             case _:
                 return 'unsupported'
-            
+
     # Метод make
     def move_make(self):
         current = self.state
@@ -92,7 +92,7 @@ class MealyMachine:
                 return 'd0'
             case _:
                 return 'unsupported'
-    
+
     # Метод open
     def move_open(self):
         current = self.state
@@ -103,7 +103,7 @@ class MealyMachine:
                 return 'd8'
             case _:
                 return 'unsupported'
-    
+
     # Метод post
     def move_post(self):
         current = self.state
@@ -130,7 +130,7 @@ class MealyMachine:
                 return 'd7'
             case _:
                 return 'unsupported'
-    
+
     # Метод throw
     def move_throw(self):
         current = self.state
@@ -235,6 +235,16 @@ def test():
 
     # Проверка вызова неизвестных методов
     assert obj.move_move() == 'unknown'
+
+    # Проверка вызова неподдерживаемых методов
+    obj.state = 'Y1'
+    assert obj.move_check() == 'unsupported'
+    assert obj.move_get() == 'unsupported'
+    assert obj.move_make() == 'unsupported'
+    assert obj.move_merge() == 'unsupported'
+    assert obj.move_open() == 'unsupported'
+    assert obj.move_post() == 'unsupported'
+    assert obj.move_throw() == 'unsupported'
 
     # Проверка неизвестных атрибутов
     assert obj.unknown_attribute is None
