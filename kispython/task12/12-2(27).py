@@ -1,15 +1,13 @@
 class MealyMachine:
     def __init__(self):
         self.state = 'Y5'
-        self.methods = {
-            'check': 0,
-            'get': 0,
-            'make': 0,
-            'merge': 0,
-            'open': 0,
-            'post': 0,
-            'throw': 0,
-        }
+        self.check_calls = 0
+        self.get_calls = 0
+        self.make_calls = 0
+        self.merge_calls = 0
+        self.open_calls = 0
+        self.post_calls = 0
+        self.throw_calls = 0
 
     def __getattr__(self, name):
         if name.startswith('move_'):
@@ -24,7 +22,8 @@ class MealyMachine:
 
     # Метод, возвращающий число успешных выполнений аргумента-метода
     def seen_method(self, method):
-        return self.methods[method]
+        attr_name = f"{method}_calls"
+        return getattr(self, attr_name, 0)
 
     # Метод, возвращающий истину, если текущее состояние является
     # частью какого-либо цикла
@@ -39,11 +38,11 @@ class MealyMachine:
         match current:
             case 'Y4':
                 self.state = 'Y0'
-                self.methods['check'] += 1
+                self.check_calls += 1
                 return 'd4'
             case 'Y9':
                 self.state = 'Y0'
-                self.methods['check'] += 1
+                self.check_calls += 1
                 return 'd1'
             case _:
                 return 'unsupported'
@@ -54,7 +53,7 @@ class MealyMachine:
         match current:
             case 'Y2':
                 self.state = 'Y4'
-                self.methods['get'] += 1
+                self.get_calls += 1
                 return 'd3'
             case _:
                 return 'unsupported'
@@ -65,7 +64,7 @@ class MealyMachine:
         match current:
             case 'Y5':
                 self.state = 'Y4'
-                self.methods['make'] += 1
+                self.make_calls += 1
                 return 'd6'
             case _:
                 return 'unsupported'
@@ -76,19 +75,19 @@ class MealyMachine:
         match current:
             case 'Y0':
                 self.state = 'Y0'
-                self.methods['merge'] += 1
+                self.merge_calls += 1
                 return 'd3'
             case 'Y5':
                 self.state = 'Y2'
-                self.methods['merge'] += 1
+                self.merge_calls += 1
                 return 'd2'
             case 'Y6':
                 self.state = 'Y3'
-                self.methods['merge'] += 1
+                self.merge_calls += 1
                 return 'd0'
             case 'Y8':
                 self.state = 'Y9'
-                self.methods['merge'] += 1
+                self.merge_calls += 1
                 return 'd0'
             case _:
                 return 'unsupported'
@@ -99,7 +98,7 @@ class MealyMachine:
         match current:
             case 'Y2':
                 self.state = 'Y7'
-                self.methods['open'] += 1
+                self.open_calls += 1
                 return 'd8'
             case _:
                 return 'unsupported'
@@ -110,23 +109,23 @@ class MealyMachine:
         match current:
             case 'Y0':
                 self.state = 'Y6'
-                self.methods['post'] += 1
+                self.post_calls += 1
                 return 'd7'
             case 'Y3':
                 self.state = 'Y1'
-                self.methods['post'] += 1
+                self.post_calls += 1
                 return 'd3'
             case 'Y4':
                 self.state = 'Y7'
-                self.methods['post'] += 1
+                self.post_calls += 1
                 return 'd0'
             case 'Y7':
                 self.state = 'Y8'
-                self.methods['post'] += 1
+                self.post_calls += 1
                 return 'd4'
             case 'Y8':
                 self.state = 'Y5'
-                self.methods['post'] += 1
+                self.post_calls += 1
                 return 'd7'
             case _:
                 return 'unsupported'
@@ -137,7 +136,7 @@ class MealyMachine:
         match current:
             case 'Y4':
                 self.state = 'Y2'
-                self.methods['throw'] += 1
+                self.throw_calls += 1
                 return 'd7'
             case _:
                 return 'unsupported'
