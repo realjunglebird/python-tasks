@@ -9,6 +9,7 @@ class MealyMachine:
         self.post_calls = 0
         self.throw_calls = 0
 
+    # Метод, обрабатывающий запросы к несуществующим атрибутам
     def __getattr__(self, name):
         if name.startswith('move_'):
             def move_unknown(*args, **kwargs):
@@ -59,7 +60,7 @@ class MealyMachine:
     # Метод make
     def move_make(self):
         current = self.state
-        if current ==  'Y5':
+        if current == 'Y5':
             self.state = 'Y4'
             self.make_calls += 1
             return 'd6'
@@ -69,7 +70,7 @@ class MealyMachine:
     # Метод merge
     def move_merge(self):
         current = self.state
-        if current ==  'Y0':
+        if current == 'Y0':
             self.state = 'Y0'
             self.merge_calls += 1
             return 'd3'
@@ -91,7 +92,7 @@ class MealyMachine:
     # Метод open
     def move_open(self):
         current = self.state
-        if current ==  'Y2':
+        if current == 'Y2':
             self.state = 'Y7'
             self.open_calls += 1
             return 'd8'
@@ -101,7 +102,7 @@ class MealyMachine:
     # Метод post
     def move_post(self):
         current = self.state
-        if current ==  'Y0':
+        if current == 'Y0':
             self.state = 'Y6'
             self.post_calls += 1
             return 'd7'
@@ -127,7 +128,7 @@ class MealyMachine:
     # Метод throw
     def move_throw(self):
         current = self.state
-        if current ==  'Y4':
+        if current == 'Y4':
             self.state = 'Y2'
             self.throw_calls += 1
             return 'd7'

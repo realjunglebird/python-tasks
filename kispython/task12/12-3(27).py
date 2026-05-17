@@ -40,6 +40,7 @@ class MealyMachine:
                 'check': ('Y0', 'd1'),
             },
         }
+        # Словарь для подсчёта числа успешных выполнений методов
         self.methods = {
             'check': 0,
             'get': 0,
@@ -50,6 +51,7 @@ class MealyMachine:
             'throw': 0,
         }
 
+    # Метод, обрабатывающий запросы к несуществующим атрибутам
     def __getattr__(self, name):
         if name.startswith('move_'):
             def move_unknown(*args, **kwargs):

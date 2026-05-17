@@ -9,6 +9,7 @@ class MealyMachine:
         self.post_calls = 0
         self.throw_calls = 0
 
+    # Метод, обрабатывающий запросы к несуществующим атрибутам
     def __getattr__(self, name):
         if name.startswith('move_'):
             def move_unknown(*args, **kwargs):
